@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Buisness.Abstract;
+using Buisness.BusinessAspects.Autofac;
 using Buisness.Constants;
 using Buisness.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -59,7 +60,7 @@ namespace Buisness.Concrete
             return new SuccessDataResult<Product>( _productDal.Get(p => p.ProductId == productId));
         }
 
-
+        [SecuredOperation("product.add")]
        [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
