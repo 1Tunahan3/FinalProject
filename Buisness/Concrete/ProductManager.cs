@@ -6,6 +6,7 @@ using Buisness.Abstract;
 using Buisness.BusinessAspects.Autofac;
 using Buisness.Constants;
 using Buisness.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -30,6 +31,8 @@ namespace Buisness.Concrete
         }
 
 
+
+        [CacheAspect]
         public IDataResult<List<Product>>  GetAll()
         {
             if (DateTime.Now.Hour == 12)
@@ -39,6 +42,7 @@ namespace Buisness.Concrete
 
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(),Messages.ProductListed);
         }
+
 
         public IDataResult<List<Product>>  GetAllByCategory(int id)
         {
@@ -62,6 +66,7 @@ namespace Buisness.Concrete
 
         [SecuredOperation("product.add")]
        [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductSerivce.Get")]
         public IResult Add(Product product)
         {
           IResult result=  BusinessRules.Run(ChechkIfProductNameExists(product.ProductName),
@@ -76,6 +81,7 @@ namespace Buisness.Concrete
             return new SuccesResult(Messages.ProductAdded);
         }
 
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
